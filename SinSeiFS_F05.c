@@ -21,6 +21,90 @@
 #define OPEN_STATUS 10
 
 static const char *dirpath = "/home/juned/Documents";
+
+// ---- //
+
+char* mergePath(char* result, const char* source, const char* newObject){
+    strcpy(result, source);
+    if(strcmp(newObject, "/") == 0){
+        return result;
+    }
+    if(newObject[0] != '/'){
+        result[strlen(result) + 1] = '\0';
+        result[strlen(result)] = '/';
+    }
+    strcat(result, newObject);
+    return result;
+}
+
+static  int  xmp_getattr(const char *path, struct stat *stbuf)
+{
+    int res;
+    char fpath[1005];
+    mergePath(fpath, dirpath, path);
+
+    res = lstat(fpath, stbuf);
+
+    if (res == -1) return -errno;
+
+    return 0;
+}
+
+static int xmp_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
+{
+    int fd;
+    int res;
+    (void) fi;
+
+    char fpath[1005];
+    mergePath(fpath, dirpath, path);
+
+    fd = open(fpath, O_RDONLY);
+
+    if (fd == -1) return -errno;
+
+    res = pread(fd, buf, size, offset);
+
+    if (res == -1) res = -errno;
+
+    close(fd);
+
+    return res;
+}
+
+static int xmp_rename(const char *from, const char *to)
+{
+	int res;
+    char fromPath[1005], toPath[1005];
+    mergePath(fromPath, dirpath, from);
+    mergePath(toPath, dirpath, to);
+
+	res = rename(fromPath, toPath);
+	if (res == -1)
+		return -errno;
+
+	return 0;
+}
+
+static int xmp_mkdir(const char *path, mode_t mode)
+{
+	int res;
+
+    char fpath[1005];
+    char temp[1005];
+    checkname(temp, path);
+    mergePath(fpath, dirpath, temp);
+
+	res = mkdir(fpath, mode);
+    
+	if (res == -1)
+		return -errno;
+
+	return 0;
+}
+
+// --- //
+
 char name[10] = "name_";
 char encv2[10] = "enc2_";
 static int lastCommand = 0;
@@ -142,7 +226,13 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_
     return 0;
 }
 static struct fuse_operations xmp_oper = {
-    .readdir = xmp_readdir};
+    .readdir = xmp_readdir,
+    .getattr = xmp_getattr,
+    .readdir = xmp_readdir,
+    .read = xmp_read,
+    .rename = xmp_rename,
+    .mkdir	= xmp_mkdir,
+};
 
 int main(int argc, char *argv[])
 {
