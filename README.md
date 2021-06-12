@@ -1,4 +1,4 @@
-# soal-shift-sisop-modul-4-F05-2021\
+# soal-shift-sisop-modul-4-F05-2021
 
 ## soal1
 ### soal 1A
