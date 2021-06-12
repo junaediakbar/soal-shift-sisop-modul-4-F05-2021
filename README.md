@@ -1,4 +1,126 @@
-# soal-shift-sisop-modul-4-F05-2021
+# soal-shift-sisop-modul-4-F05-2021\
+
+## soal1
+### soal 1A
+Yang diminta adalah ketika sebuah direktori dibuat dengan awalan “AtoZ_”, maka direktori tersebut akan menjadi direktori ter-encode.
+dapat dilakukan dengan FUSE sebagaimana pada umumnya, namun pada fungsi `xmp_readdir`
+```
+static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info *fi){ //baca directory
+	char * strToEnc1 = strstr(path, prefix);
+    
+	if(strToEnc1 != NULL) {
+        decode1(strToEnc1);
+    }
+
+	char newPath[1000];
+	if(strcmp(path,"/") == 0){
+		path=directoryPath;
+		sprintf(newPath, "%s", path);
+	} else 
+        sprintf(newPath, "%s%s", directoryPath, path);
+
+	int result = 0;
+	struct dirent *dir;
+	DIR *dp;
+	(void) fi;
+	(void) offset;
+	dp = opendir(newPath);
+	if (dp == NULL) return -errno;
+
+	while ((dir = readdir(dp)) != NULL) { //buat loop yang ada di dalam directory
+		struct stat st;
+		memset(&st, 0, sizeof(st));
+		st.st_ino = dir->d_ino;
+		st.st_mode = dir->d_type << 12;
+		if(strToEnc1 != NULL){
+			encode1(dir->d_name); //encode yang ada di dalam directory sekarang
+        }
+		
+		result = (filler(buf, dir->d_name, &st, 0));
+		if(result!=0) break;
+	}
+
+	closedir(dp);
+	return 0;
+}
+```
+Untuk Fungsi `encode1` nya adalah sebagai berikut
+```
+void encode1(char* strEnc1) { 
+	if(strcmp(strEnc1, ".") == 0 || strcmp(strEnc1, "..") == 0)
+        return;
+    
+    int strLength = strlen(strEnc1);
+    for(int i = 0; i < strLength; i++) {
+		if(strEnc1[i] == '/') 
+            continue;
+		if(strEnc1[i]=='.')
+            break;
+        
+		if(strEnc1[i]>='A'&&strEnc1[i]<='Z')
+            strEnc1[i] = 'Z'+'A'-strEnc1[i];
+        if(strEnc1[i]>='a'&&strEnc1[i]<='z')
+            strEnc1[i] = 'z'+'a'-strEnc1[i];
+    }
+}
+```
+
+### soal 1b
+Ketika direname di-rename dengan awalan “AtoZ_”, maka direktori tersebut akan menjadi direktori ter-encode.
+Untuk Fungsi `decode1` nya adalah sebagai berikut
+```
+void decode1(char * strDec1){ //decrypt encv1_
+	if(strcmp(strDec1, ".") == 0 || strcmp(strDec1, "..") == 0 || strstr(strDec1, "/") == NULL) 
+        return;
+    
+    int strLength = strlen(strDec1), s=0;
+	for(int i = strLength; i >= 0; i--){
+		if(strDec1[i]=='/')break;
+
+		if(strDec1[i]=='.'){//nyari titik terakhir
+			strLength = i;
+			break;
+		}
+	}
+	for(int i = 0; i < strLength; i++){
+		if(strDec1[i]== '/'){
+			s = i+1;
+			break;
+		}
+	}
+    for(int i = s; i < strLength; i++) {
+		if(strDec1[i] =='/'){
+            continue;
+        }
+        if(strDec1[i]>='A'&&strDec1[i]<='Z'){
+            strDec1[i] = 'Z'+'A'-strDec1[i];
+        }
+        if(strDec1[i]>='a'&&strDec1[i]<='z'){
+            strDec1[i] = 'z'+'a'-strDec1[i];
+        }
+    }
+	
+}
+```
+### soal 1c
+Apabila direktori yang terenkripsi di-rename menjadi tidak ter-encode, maka isi direktori tersebut akan terdecode. Untuk soal ini telah terimplementasi pada fungsi `readdir` pada soal 1a dan soal 1b.
+
+### soal 1d
+Setiap pembuatan direktori ter-encode (mkdir atau rename) akan tercatat ke sebuah log. Format : /home/[USER]/Downloads/[Nama Direktori] → /home/[USER]/Downloads/AtoZ_[Nama Direktori] .
+berikut adalah fungsi untuk penulisan log.
+```
+void logging2(const char* old, char* new) {
+	// char* filename = basename(new);
+
+	FILE * logFile = fopen("/home/juned/fs.log", "a");
+    fprintf(logFile, "%s → %s\n", old, new);
+    fclose(logFile);
+}
+```
+### soal 1e
+Metode encode pada suatu direktori juga berlaku terhadap direktori yang ada di dalamnya. (rekursif).
+Untuk soal ini telah terimplementasi di soal 1a dan soal 1b.
+
 ## soal2
 Kesulitan :
 - Belum paham bagaimana caranya untuk membedakan enkripsi yang digunakan dari folder awalan "RX_", antara folder hasil mkdir, dan folder hasil rename.<br> 
