@@ -9,7 +9,18 @@
 #include <sys/time.h>
 #include <sys/wait.h>
 #define SEGMENT 1024 
+#define MKDIR_STATUS 1
+#define MKNOD_STATUS 2
+#define RMDIR_STATUS 3
+#define REMOVE_STATUS 4
+#define READDR_STATUS 5
+#define RENAME_STATUS 6
+#define TRUNCATE_STATUS 7
+#define WRITE_STATUS 8
+#define READ_STATUS 9
+#define OPEN_STATUS 10
 
+static int lastCommand = 0;
 static const char * directoryPath = "/home/juned/Downloads";
 char prefix[6] = "AtoZ_";
 
@@ -145,7 +156,7 @@ static int xmp_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_
 		result = (filler(buf, dir->d_name, &st, 0));
 		if(result!=0) break;
 	}
-
+	lastCommand = READDR_STATUS;
 	closedir(dp);
 	return 0;
 }
