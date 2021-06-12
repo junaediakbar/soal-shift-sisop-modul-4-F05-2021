@@ -64,6 +64,9 @@ void encode1(char* strEnc1) {
     }
 }
 ```
+<img src="images/soal1a-before.png">
+setelah dilakukan rename
+<img src="images/soal1a-after.png">
 
 ### soal 1b
 Ketika direname di-rename dengan awalan “AtoZ_”, maka direktori tersebut akan menjadi direktori ter-encode.
@@ -102,8 +105,12 @@ void decode1(char * strDec1){ //decrypt encv1_
 	
 }
 ```
+<img src="images/soal1b-before.png">
+setelah dilakukan rename
+<img src="images/soal1b-after.png">
 ### soal 1c
 Apabila direktori yang terenkripsi di-rename menjadi tidak ter-encode, maka isi direktori tersebut akan terdecode. Untuk soal ini telah terimplementasi pada fungsi `readdir` pada soal 1a dan soal 1b.
+<img src="images/soal1c.png">
 
 ### soal 1d
 Setiap pembuatan direktori ter-encode (mkdir atau rename) akan tercatat ke sebuah log. Format : /home/[USER]/Downloads/[Nama Direktori] → /home/[USER]/Downloads/AtoZ_[Nama Direktori] .
@@ -117,9 +124,15 @@ void logging2(const char* old, char* new) {
     fclose(logFile);
 }
 ```
+<img src="images/soal1d.png">
+
 ### soal 1e
 Metode encode pada suatu direktori juga berlaku terhadap direktori yang ada di dalamnya. (rekursif).
 Untuk soal ini telah terimplementasi di soal 1a dan soal 1b.
+<img src="images/soal1e-before.png">
+setelah dilakukan rename
+<img src="images/soal1e-after.png">
+
 
 ## soal2
 Kesulitan :
@@ -187,3 +200,4 @@ dilakukan pengecekan lagi jika bertipe 2, maka logFile akan mencetak sebuah log 
 yaitu `(time_info)` dan juga beberapa syscall sisanya, seperti `rmdir` dan juga `unink`.<br><br>
 
 Berikut ilustrasi jika program dijalankan untuk soal 4a - 4e:
+<img src="images/soal4.png">
