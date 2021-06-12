@@ -1,4 +1,7 @@
 # soal-shift-sisop-modul-4-F05-2021
+## soal2
+Kesulitan :
+- Belum paham bagaimana caranya untuk membedakan enkripsi yang digunakan dari folder awalan "RX_", antara folder hasil mkdir, dan folder hasil rename.<br> 
 ## soal4
 ### Soal 4A
 Soal ini diminta untuk membuat sebuah Log system yang bernama `SinSeiFS.log` pada direktori home user
